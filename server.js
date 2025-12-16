@@ -43,6 +43,9 @@ app.use('/api/auth', dbCheck, require('./routes/auth'));
 app.use('/api/bookings', dbCheck, require('./routes/bookings'));
 app.use('/api/contact', dbCheck, require('./routes/contact'));
 app.use('/api/admin', dbCheck, require('./routes/admin'));
+app.use('/api/services', dbCheck, require('./routes/services'));
+app.use('/api/plans', dbCheck, require('./routes/plans'));
+app.use('/api/content', dbCheck, require('./routes/content'));
 
 // Health check endpoint
 app.get('/health', (req, res) => {

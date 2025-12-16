@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Admin = require('../models/Admin');
 const { generateToken } = require('../config/jwt');
 const crypto = require('crypto');
 const OTP = require('../models/Otp');
@@ -69,7 +70,8 @@ exports.register = async (req, res) => {
                 displayName: user.displayName,
                 provider: user.provider,
                 emailVerified: user.emailVerified,
-                phoneVerified: user.phoneVerified
+                phoneVerified: user.phoneVerified,
+                role: user.role
             }
         });
     } catch (error) {
@@ -115,6 +117,39 @@ exports.login = async (req, res) => {
         const user = await User.findOne(query).select('+password');
 
         if (!user) {
+            // Check if it is an admin login
+            /** @type {any} */
+            const admin = await Admin.findOne({ email: email.toLowerCase() }).select('+password');
+
+            if (admin) {
+                // Verify admin password
+                const isMatch = await admin.comparePassword(password);
+                if (isMatch) {
+                    // Generate JWT token
+                    const token = generateToken(admin._id);
+
+                    // Set httpOnly cookie
+                    res.cookie('token', token, {
+                        httpOnly: true,
+                        secure: process.env.NODE_ENV === 'production',
+                        sameSite: 'strict',
+                        maxAge: 30 * 24 * 60 * 60 * 1000
+                    });
+
+                    return res.json({
+                        success: true,
+                        message: 'Admin login successful',
+                        token,
+                        user: {
+                            id: admin._id,
+                            email: admin.email,
+                            role: admin.role,
+                            displayName: 'Admin'
+                        }
+                    });
+                }
+            }
+
             return res.status(401).json({
                 success: false,
                 message: 'Invalid credentials'
@@ -125,7 +160,7 @@ exports.login = async (req, res) => {
         if (!user.isActive) {
             return res.status(401).json({
                 success: false,
-                message: 'Account is inactive. Please contact support.'
+                message: 'Your account is blocked. Please contact admins at support@voxedgemedia.com'
             });
         }
 
@@ -166,7 +201,8 @@ exports.login = async (req, res) => {
                 photoURL: user.photoURL,
                 provider: user.provider,
                 emailVerified: user.emailVerified,
-                phoneVerified: user.phoneVerified
+                phoneVerified: user.phoneVerified,
+                role: user.role
             }
         });
     } catch (error) {
@@ -430,7 +466,8 @@ exports.verifyEmailOTP = async (req, res) => {
                 photoURL: user.photoURL,
                 provider: user.provider,
                 emailVerified: user.emailVerified,
-                phoneVerified: user.phoneVerified
+                phoneVerified: user.phoneVerified,
+                role: user.role
             }
         });
     } catch (error) {
@@ -489,7 +526,8 @@ exports.googleAuth = async (req, res) => {
                 displayName: user.displayName,
                 photoURL: user.photoURL,
                 provider: user.provider,
-                emailVerified: user.emailVerified
+                emailVerified: user.emailVerified,
+                role: user.role
             }
         });
     } catch (error) {
@@ -519,6 +557,7 @@ exports.getCurrentUser = async (req, res) => {
                 provider: user.provider,
                 emailVerified: user.emailVerified,
                 phoneVerified: user.phoneVerified,
+                role: user.role,
                 createdAt: user.createdAt,
                 lastLogin: user.lastLogin
             }
@@ -561,7 +600,8 @@ exports.updateProfile = async (req, res) => {
                 email: user.email,
                 phoneNumber: user.phoneNumber,
                 displayName: user.displayName,
-                photoURL: user.photoURL
+                photoURL: user.photoURL,
+                role: user.role
             }
         });
     } catch (error) {
