@@ -3,14 +3,13 @@ const nodemailer = require('nodemailer');
 const sendEmail = async (options) => {
     try {
         const transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST?.trim(),
-            port: process.env.SMTP_PORT,
-            secure: process.env.SMTP_PORT == 465, // true for 465, false for other ports
+            service: "gmail",
             auth: {
-                user: process.env.SMTP_EMAIL?.trim(),
-                pass: process.env.SMTP_PASSWORD?.trim()
-            }
+                user: process.env.SMTP_EMAIL,
+                pass: process.env.SMTP_PASSWORD,
+            },
         });
+
 
         const message = {
             from: `${process.env.FROM_NAME || 'Vox Edge Media'} <${process.env.FROM_EMAIL || process.env.SMTP_EMAIL}>`,
@@ -19,6 +18,10 @@ const sendEmail = async (options) => {
             text: options.message,
             html: options.html
         };
+
+        await transporter.verify();
+        console.log("✅ SMTP VERIFIED SUCCESSFULLY");
+
 
         const info = await transporter.sendMail(message);
 

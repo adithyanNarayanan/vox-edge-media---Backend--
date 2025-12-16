@@ -111,6 +111,7 @@ exports.login = async (req, res) => {
         }
 
         // Find user and include password for comparison
+        /** @type {any} */
         const user = await User.findOne(query).select('+password');
 
         if (!user) {
@@ -413,11 +414,11 @@ exports.verifyEmailOTP = async (req, res) => {
         });
 
         // Determine if this was a new registration or existing user
-        const isNewUser = !user.lastLogin || (new Date() - new Date(user.lastLogin)) < 1000;
+        const isNewUser = !user.lastLogin || (new Date().getTime() - new Date(user.lastLogin).getTime()) < 1000;
 
         res.json({
             success: true,
-            message: user.createdAt && (new Date() - new Date(user.createdAt)) < 5000
+            message: user.createdAt && (new Date().getTime() - new Date(user.createdAt).getTime()) < 5000
                 ? 'Account created successfully! Please login with your credentials.'
                 : 'Email verified successfully!',
             token, // Also send in response for localStorage fallback
@@ -593,6 +594,7 @@ exports.changePassword = async (req, res) => {
             });
         }
 
+        /** @type {any} */
         const user = await User.findById(req.user._id).select('+password');
 
         if (!user || !user.password) {

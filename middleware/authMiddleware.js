@@ -37,7 +37,15 @@ const authMiddleware = async (req, res, next) => {
         }
 
         // Verify token
+
         const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+
+        if (typeof decoded === 'string') {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid token payload.'
+            });
+        }
 
         // Get user from token
         const user = await User.findById(decoded.id).select('-password');
