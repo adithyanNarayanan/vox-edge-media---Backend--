@@ -41,13 +41,12 @@ const serviceSchema = new mongoose.Schema({
 });
 
 // Create slug from title
-serviceSchema.pre('save', function (next) {
+serviceSchema.pre('save', async function () {
     if (this.title && !this.slug) {
         this.slug = this.title.toLowerCase()
             .replace(/[^\w ]+/g, '')
             .replace(/ +/g, '-');
     }
-    next();
 });
 
 module.exports = mongoose.model('Service', serviceSchema);
