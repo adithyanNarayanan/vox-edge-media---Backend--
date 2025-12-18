@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000'], // Frontend URLs
+    origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://vox-edge-media.vercel.app'], // Frontend URLs
     credentials: true // Allow cookies to be sent
 }));
 app.use(express.json());
