@@ -8,13 +8,13 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://vox-edge-media.vercel.app'], // Frontend URLs
+    origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://vox-edge-media.vercel.app', process.env.FRONTEND_URL].filter(Boolean), // Frontend URLs
     credentials: true // Allow cookies to be sent
 }));
 app.use(express.json());
 
 // MongoDB Connection
-const mongoUri = 'mongodb+srv://adithyanNarayanan:root@cluster0.nszv8ws.mongodb.net/vox-edge-media?retryWrites=true&w=majority'; // process.env.MONGODB_URI fallback removed to force cloud connection
+const mongoUri = process.env.MONGODB_URI || 'mongodb+srv://adithyan:root@cluster0.hr69xgw.mongodb.net/';
 
 mongoose.connect(mongoUri)
     .then(() => console.log('✓ MongoDB Connected'))

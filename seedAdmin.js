@@ -3,7 +3,7 @@ const User = require('./models/User');
 require('dotenv').config();
 
 // Use the hardcoded URI as seen in server.js to ensure connection matches
-const mongoUri = 'mongodb+srv://adithyanNarayanan:root@cluster0.nszv8ws.mongodb.net/vox-edge-media?retryWrites=true&w=majority';
+const mongoUri = 'mongodb+srv://adithyan:root@cluster0.hr69xgw.mongodb.net/';
 
 const seedAdmin = async () => {
     try {

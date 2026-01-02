@@ -2,12 +2,21 @@ const nodemailer = require('nodemailer');
 
 const sendEmail = async (options) => {
     try {
+        if (!process.env.SMTP_EMAIL || !process.env.SMTP_PASSWORD) {
+            console.error("❌ SMTP_EMAIL or SMTP_PASSWORD is not defined in .env file");
+            throw new Error("Missing SMTP credentials");
+        }
+
         const transporter = nodemailer.createTransport({
-            service: "gmail",
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true, // use SSL
             auth: {
                 user: process.env.SMTP_EMAIL,
-                pass: process.env.SMTP_PASSWORD,
+                pass: process.env.SMTP_PASSWORD.replace(/\s+/g, ''),
             },
+            debug: true,
+            logger: true
         });
 
 
